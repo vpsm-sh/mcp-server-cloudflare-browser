@@ -13,7 +13,7 @@ OpenCode).
 
 **Stack:** TypeScript 5 · Node.js 18+ · ESM · `@modelcontextprotocol/sdk` · Zod
 
-**npm package:** `@vpsm/mcp-server-cloudflare-browser`
+**npm package:** `@vpsm-sh/mcp-server-cloudflare-browser`
 **Repository:** https://github.com/vpsm/mcp-server-cloudflare-browser
 
 ---

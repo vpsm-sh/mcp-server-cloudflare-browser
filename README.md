@@ -1,8 +1,8 @@
 # mcp-server-cloudflare-browser
 
-[![npm version](https://img.shields.io/npm/v/@vpsm/mcp-server-cloudflare-browser)](https://www.npmjs.com/package/@vpsm/mcp-server-cloudflare-browser)
+[![npm version](https://img.shields.io/npm/v/@vpsm-sh/mcp-server-cloudflare-browser)](https://www.npmjs.com/package/@vpsm-sh/mcp-server-cloudflare-browser)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Node.js](https://img.shields.io/node/v/@vpsm/mcp-server-cloudflare-browser)](https://nodejs.org)
+[![Node.js](https://img.shields.io/node/v/@vpsm-sh/mcp-server-cloudflare-browser)](https://nodejs.org)
 [![CI](https://github.com/vpsm/mcp-server-cloudflare-browser/actions/workflows/ci.yml/badge.svg)](https://github.com/vpsm/mcp-server-cloudflare-browser/actions/workflows/ci.yml)
 
 An [MCP](https://modelcontextprotocol.io) server that fetches any URL and returns it as clean Markdown, powered by the [Cloudflare Browser Rendering API](https://developers.cloudflare.com/browser-rendering/). Useful for giving LLMs access to live web content without the noise of raw HTML.
@@ -24,7 +24,7 @@ No installation needed. Run directly with `npx`:
 ```bash
 CLOUDFLARE_ACCOUNT_ID=your-account-id \
 CLOUDFLARE_API_TOKEN=your-api-token \
-npx -y @vpsm/mcp-server-cloudflare-browser
+npx -y @vpsm-sh/mcp-server-cloudflare-browser
 ```
 
 ## Configuration
@@ -45,7 +45,7 @@ Add this to your `claude_desktop_config.json`:
   "mcpServers": {
     "cloudflare-browser": {
       "command": "npx",
-      "args": ["-y", "@vpsm/mcp-server-cloudflare-browser@latest"],
+      "args": ["-y", "@vpsm-sh/mcp-server-cloudflare-browser@latest"],
       "env": {
         "CLOUDFLARE_ACCOUNT_ID": "your-account-id",
         "CLOUDFLARE_API_TOKEN": "your-api-token"
@@ -68,7 +68,7 @@ Add this to your `.vscode/mcp.json` (or user-level `settings.json` under `"mcp.s
   "servers": {
     "cloudflare-browser": {
       "command": "npx",
-      "args": ["-y", "@vpsm/mcp-server-cloudflare-browser@latest"],
+      "args": ["-y", "@vpsm-sh/mcp-server-cloudflare-browser@latest"],
       "env": {
         "CLOUDFLARE_ACCOUNT_ID": "${input:cloudflareAccountId}",
         "CLOUDFLARE_API_TOKEN": "${input:cloudflareApiToken}"
@@ -89,7 +89,7 @@ Add to your `~/.config/opencode/config.json`:
   "mcp": {
     "cloudflare-browser": {
       "type": "local",
-      "command": ["npx", "-y", "@vpsm/mcp-server-cloudflare-browser@latest"],
+      "command": ["npx", "-y", "@vpsm-sh/mcp-server-cloudflare-browser@latest"],
       "env": {
         "CLOUDFLARE_ACCOUNT_ID": "your-account-id",
         "CLOUDFLARE_API_TOKEN": "your-api-token"
