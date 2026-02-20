@@ -1,0 +1,53 @@
+{
+  "name": "@vpsm/mcp-server-cloudflare-browser",
+  "version": "1.0.0",
+  "description": "MCP server that fetches URLs as Markdown via the Cloudflare Browser Rendering API.",
+  "author": "Nathan Beddoe",
+  "license": "MIT",
+  "homepage": "https://github.com/vpsm/mcp-server-cloudflare-browser#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vpsm/mcp-server-cloudflare-browser.git"
+  },
+  "bugs": {
+    "url": "https://github.com/vpsm/mcp-server-cloudflare-browser/issues"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "cloudflare",
+    "browser-rendering",
+    "markdown",
+    "llm",
+    "ai"
+  ],
+  "type": "module",
+  "bin": {
+    "mcp-server-cloudflare-browser": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc && chmod +x dist/index.js",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build",
+    "inspector": "npx @modelcontextprotocol/inspector dist/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.26.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^5.9.3"
+  }
+}
