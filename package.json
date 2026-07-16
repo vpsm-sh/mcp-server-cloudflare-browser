@@ -1,6 +1,6 @@
 {
   "name": "@vpsm-sh/mcp-server-cloudflare-browser",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "MCP server that fetches URLs as Markdown via the Cloudflare Browser Rendering API.",
   "author": "Nathan Beddoe",
   "license": "MIT",
@@ -43,11 +43,11 @@
     "access": "public"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.26.0",
-    "zod": "^4.3.6"
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
+    "@types/node": "^22.20.1",
     "typescript": "^5.9.3"
   }
 }

@@ -9,7 +9,21 @@ An [MCP](https://modelcontextprotocol.io) server that fetches any URL and return
 
 ## Features
 
-- **`render_markdown`** — fetches a URL using a real headless browser and returns the page as Markdown
+Eleven tools covering the full Cloudflare Browser Run Quick Actions API:
+
+| Tool | Description |
+|---|---|
+| `render_markdown` | URL → clean Markdown (JS-rendered) |
+| `render_content` | URL → fully rendered HTML after JS execution |
+| `take_screenshot` | URL → PNG screenshot |
+| `render_pdf` | URL or HTML → PDF (base64) |
+| `take_snapshot` | URL → multiple formats in one call (HTML + screenshot + markdown + a11y tree) |
+| `get_accessibility_tree` | URL → accessibility tree (roles, names, states) |
+| `extract_links` | URL → all links on the page |
+| `scrape_elements` | URL + CSS selectors → structured element data |
+| `extract_json` | URL + prompt/schema → AI-powered structured JSON |
+| `start_crawl` | URL → async crawl job (follow links, up to N pages) |
+| `get_crawl_status` | Poll crawl job status and retrieve results |
 
 ## Requirements
 
@@ -107,11 +121,110 @@ Fetches a URL using a headless browser and returns the rendered page as Markdown
 
 | Parameter | Type | Required | Description |
 |---|---|---|---|
-| `url` | `string` | Yes | The URL to fetch and render |
+| `url` | `string` | One of | The URL to fetch and render |
+| `html` | `string` | One of | Raw HTML to convert to Markdown |
+| `gotoOptions` | `object` | No | Control page load behavior (`waitUntil`, `timeout`) |
+| `rejectResourceTypes` | `string[]` | No | Block resource types (e.g., `["image", "stylesheet"]`) |
 
-**Example prompt:** _"Fetch https://developers.cloudflare.com/browser-rendering/ and summarize it."_
+**Example:** _"Fetch https://developers.cloudflare.com/browser-rendering/ and summarize it."_
 
-The tool handles JavaScript-rendered pages — it uses a real browser, not a simple HTTP fetch, so dynamic content is captured.
+### `render_content`
+
+Fetches a URL and returns the fully rendered HTML after JavaScript execution.
+
+### `take_screenshot`
+
+Captures a screenshot of a fully rendered webpage. Returns a PNG image.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL to screenshot or HTML to render |
+| `screenshotOptions` | `object` | No | `fullPage`, `omitBackground`, `type`, `quality` |
+| `selector` | `string` | No | CSS selector to screenshot a specific element |
+| `viewport` | `object` | No | `width`, `height`, `deviceScaleFactor` |
+
+### `render_pdf`
+
+Generates a PDF from a webpage or custom HTML. Returns base64-encoded PDF data.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML to convert to PDF |
+| `pdfOptions` | `object` | No | `format`, `landscape`, `printBackground`, `displayHeaderFooter`, `headerTemplate`, `footerTemplate`, `margin`, `scale` |
+
+### `take_snapshot`
+
+Captures multiple formats in a single request: HTML, screenshot, Markdown, and/or accessibility tree.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML to snapshot |
+| `formats` | `string[]` | No | At least two of: `content`, `screenshot`, `markdown`, `accessibilityTree` |
+
+### `get_accessibility_tree`
+
+Captures the accessibility tree of a webpage after JavaScript execution.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML |
+| `interestingOnly` | `boolean` | No | Only semantically meaningful nodes (default: true) |
+| `root` | `string` | No | CSS selector to anchor to a subtree |
+
+### `extract_links`
+
+Extracts all links from a webpage, including hidden ones.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML |
+| `visibleLinksOnly` | `boolean` | No | Only return visible links (default: false) |
+| `excludeExternalLinks` | `boolean` | No | Exclude external domain links (default: false) |
+
+### `scrape_elements`
+
+Extracts structured data from specific elements using CSS selectors.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML |
+| `elements` | `object[]` | Yes | Array of `{ selector: string }` |
+
+### `extract_json`
+
+Extracts structured JSON data from a webpage using AI.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` or `html` | `string` | Yes | URL or HTML |
+| `prompt` | `string` | No | Natural language prompt describing what to extract |
+| `response_format` | `object` | No | JSON schema for structured output |
+| `custom_ai` | `object[]` | No | Custom AI models with fallback support |
+
+### `start_crawl`
+
+Initiates an async crawl job that follows links across a site.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `url` | `string` | Yes | Starting URL |
+| `limit` | `number` | No | Max pages (default: 10, max: 100000) |
+| `depth` | `number` | No | Max link depth |
+| `formats` | `string[]` | No | `html`, `markdown`, or `json` (default: html) |
+| `render` | `boolean` | No | Use headless browser (default: true) |
+| `includePatterns` | `string[]` | No | Wildcard patterns to include |
+| `excludePatterns` | `string[]` | No | Wildcard patterns to exclude |
+
+### `get_crawl_status`
+
+Checks status or retrieves results of an async crawl job.
+
+| Parameter | Type | Required | Description |
+|---|---|---|---|
+| `jobId` | `string` | Yes | Crawl job ID from `start_crawl` |
+| `status` | `string` | No | Filter records by status |
+| `cursor` | `string` | No | Pagination cursor |
+| `limit` | `number` | No | Max records (use 1 for status checks) |
 
 ## Development
 

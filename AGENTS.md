@@ -82,14 +82,20 @@ These must be injected by the MCP client's configuration — not stored in the r
 
 ## Architecture
 
-The entire server lives in **`src/index.ts`** (~100 lines). Keep it that way unless complexity
-genuinely warrants splitting. If splitting is necessary, co-locate related tools in
-`src/tools/<name>.ts` and re-export from `src/index.ts`.
+The server is split across four source files, each registering related tools:
+
+- **`src/index.ts`** — server setup, imports all tool registration functions, starts stdio transport.
+- **`src/utils.ts`** — shared helpers (`getCredentials`, `callBrowserRun`, `callBrowserRunBinary`, `callBrowserRunGet`, `withCredentials`, `errorResult`, `textResult`, `imageResult`) and reusable Zod schemas (`commonParams`, `gotoOptionsSchema`, `viewportSchema`, etc.).
+- **`src/tools/render.ts`** — `render_markdown`, `render_content`, `take_screenshot`, `render_pdf`, `take_snapshot`, `get_accessibility_tree`.
+- **`src/tools/extract.ts`** — `extract_links`, `scrape_elements`, `extract_json`.
+- **`src/tools/crawl.ts`** — `start_crawl`, `get_crawl_status`.
+
+Each tool file exports a `register<Name>Tools(server)` function called from `index.ts`.
 
 **Entry point flow:**
 1. `src/index.ts` opens with a `#!/usr/bin/env node` shebang — required for `npx` execution.
 2. Instantiate `McpServer` with name/version metadata.
-3. Register each tool with `server.registerTool(name, config, handler)`.
+3. Call each `register*Tools(server)` function to register all tools.
 4. `run()` creates a `StdioServerTransport`, connects the server, logs to stderr.
 5. `run().catch(...)` exits with code 1 on fatal failure.
 
