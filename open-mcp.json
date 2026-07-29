@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "servers": {
+    "cloudflare-browser": {
+      "description": "Render, crawl, extract, screenshot, and generate PDFs from web pages.",
+      "transport": {
+        "type": "stdio",
+        "command": "npx",
+        "args": [
+          "-y",
+          "@vpsm-sh/mcp-server-cloudflare-browser@1.1.0"
+        ],
+        "env": {
+          "CLOUDFLARE_ACCOUNT_ID": "${CLOUDFLARE_ACCOUNT_ID}",
+          "CLOUDFLARE_API_TOKEN": "${CLOUDFLARE_API_TOKEN}"
+        }
+      },
+      "source": {
+        "type": "npm",
+        "identity": "@vpsm-sh/mcp-server-cloudflare-browser@1.1.0"
+      }
+    }
+  }
+}
