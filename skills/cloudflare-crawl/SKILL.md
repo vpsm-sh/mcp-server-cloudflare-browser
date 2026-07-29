@@ -2,6 +2,7 @@
 name: cloudflare-crawl
 description: |
   Crawl a website and extract content from multiple pages following links. Use when the user wants to crawl a site, bulk extract pages, build a knowledge base from a docs section, or says "crawl", "get all pages", "extract everything under /docs", or "scrape the whole site". Returns markdown, HTML, or JSON for each page. Handles JavaScript-rendered SPAs.
+disable-model-invocation: true
 ---
 
 # cloudflare crawl

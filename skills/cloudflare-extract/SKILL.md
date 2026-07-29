@@ -2,6 +2,7 @@
 name: cloudflare-extract
 description: |
   Search the web, extract structured data, and pull links from any URL using AI or CSS selectors. Use when the user wants to search the web, find pages, extract specific data from a webpage, pull out a pricing table, get all links, extract product info as JSON, or says "search for", "find pages about", "extract", "get the links", "pull out the data from", or "get structured data from". Supports web search via DuckDuckGo, AI-powered JSON extraction with schema enforcement, and CSS selector-based element scraping.
+disable-model-invocation: true
 ---
 
 # cloudflare extract

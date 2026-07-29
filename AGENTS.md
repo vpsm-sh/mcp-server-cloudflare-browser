@@ -86,6 +86,10 @@ The server is split across four source files, each registering related tools:
 
 - **`src/index.ts`** — server setup, imports all tool registration functions, starts stdio transport.
 - **`src/utils.ts`** — shared helpers (`getCredentials`, `callBrowserRun`, `callBrowserRunBinary`, `callBrowserRunGet`, `withCredentials`, `errorResult`, `textResult`, `imageResult`) and reusable Zod schemas (`commonParams`, `gotoOptionsSchema`, `viewportSchema`, etc.).
+  `callBrowserRun` implements the local `waitUntil: 'auto'` strategy: try `domcontentloaded`
+  first, retry with `networkidle0` if the visible text is under `autoMinTextLength` chars.
+  `'auto'` is never sent to the Cloudflare API — binary endpoints (screenshot/PDF) and
+  `snapshot` resolve it to `networkidle0` since visuals need a full page load.
 - **`src/tools/render.ts`** — `render_markdown`, `render_content`, `take_screenshot`, `render_pdf`, `take_snapshot`, `get_accessibility_tree`.
 - **`src/tools/extract.ts`** — `extract_links`, `scrape_elements`, `extract_json`.
 - **`src/tools/crawl.ts`** — `start_crawl`, `get_crawl_status`.

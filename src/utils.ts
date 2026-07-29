@@ -57,7 +57,27 @@ function withDefaultGotoOptions(
   return result;
 }
 
-export async function callBrowserRun(
+const autoMinTextLength = 500;
+
+function resolveWaitUntil(
+  body: Record<string, unknown>,
+  waitUntil: string,
+): Record<string, unknown> {
+  const existing = (body.gotoOptions as Record<string, unknown> | undefined) ?? {};
+  return { ...body, gotoOptions: { ...existing, waitUntil } };
+}
+
+function visibleTextLength(result: unknown): number {
+  const raw = typeof result === 'string' ? result : JSON.stringify(result) ?? '';
+  return raw
+    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim().length;
+}
+
+async function callBrowserRunOnce(
   accountId: string,
   apiToken: string,
   endpoint: string,
@@ -81,6 +101,52 @@ export async function callBrowserRun(
   }
 
   return data.result;
+}
+
+export async function callBrowserRun(
+  accountId: string,
+  apiToken: string,
+  endpoint: string,
+  body: Record<string, unknown>,
+): Promise<unknown> {
+  const gotoOptions = body.gotoOptions as Record<string, unknown> | undefined;
+
+  if (gotoOptions?.waitUntil !== 'auto') {
+    return callBrowserRunOnce(accountId, apiToken, endpoint, body);
+  }
+
+  // 'auto' is a local strategy, not a Cloudflare API value. The snapshot
+  // endpoint captures visuals, which need a full page load regardless.
+  if (endpoint === 'snapshot') {
+    return callBrowserRunOnce(
+      accountId,
+      apiToken,
+      endpoint,
+      resolveWaitUntil(body, 'networkidle0'),
+    );
+  }
+
+  const result = await callBrowserRunOnce(
+    accountId,
+    apiToken,
+    endpoint,
+    resolveWaitUntil(body, 'domcontentloaded'),
+  );
+
+  if (visibleTextLength(result) >= autoMinTextLength) {
+    return result;
+  }
+
+  console.error(
+    `waitUntil=auto: '${endpoint}' returned little content at domcontentloaded; ` +
+      'retrying with networkidle0',
+  );
+  return callBrowserRunOnce(
+    accountId,
+    apiToken,
+    endpoint,
+    resolveWaitUntil(body, 'networkidle0'),
+  );
 }
 
 export async function callBrowserRunGet(
@@ -114,13 +180,19 @@ export async function callBrowserRunBinary(
 ): Promise<Buffer> {
   const apiUrl = `${API_BASE}/${accountId}/browser-rendering/${endpoint}`;
 
+  // 'auto' is a local strategy; screenshots and PDFs always need a full load.
+  const resolvedBody =
+    (body.gotoOptions as Record<string, unknown> | undefined)?.waitUntil === 'auto'
+      ? resolveWaitUntil(body, 'networkidle0')
+      : body;
+
   const response = await fetch(apiUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${apiToken}`,
     },
-    body: JSON.stringify(withDefaultGotoOptions(body)),
+    body: JSON.stringify(withDefaultGotoOptions(resolvedBody)),
   });
 
   if (!response.ok) {
@@ -160,10 +232,12 @@ export function withCredentials<T extends Record<string, unknown>>(
 const gotoOptionsSchema = z
   .object({
     waitUntil: z
-      .enum(['load', 'domcontentloaded', 'networkidle0', 'networkidle2'])
+      .enum(['auto', 'load', 'domcontentloaded', 'networkidle0', 'networkidle2'])
       .optional()
       .describe(
-        "When to consider navigation successful. Use 'networkidle0' for JS-heavy SPAs.",
+        "When to consider navigation successful. Use 'networkidle0' for JS-heavy SPAs. " +
+          "Use 'auto' to try 'domcontentloaded' first and automatically retry with " +
+          "'networkidle0' when the page returns little content — faster on server-rendered pages.",
       ),
     timeout: z.number().optional().describe('Max navigation timeout in milliseconds.'),
   })

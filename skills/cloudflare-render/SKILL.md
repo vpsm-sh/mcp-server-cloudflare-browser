@@ -2,6 +2,7 @@
 name: cloudflare-render
 description: |
   Render any URL as markdown, HTML, screenshot, or PDF via a real headless browser. Use when the user provides a URL and wants its content, says "render this page", "fetch this URL", "take a screenshot", "generate a PDF", "get the HTML", or "read this webpage". Handles JavaScript-rendered SPAs and dynamic content.
+disable-model-invocation: true
 ---
 
 # cloudflare render
